@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useId } from "react";
+import { useRouter } from "next/navigation"; // Added for redirection
 
 // ── Icons ──────────────────────────────────────────────────────────────────────
 
@@ -59,22 +60,35 @@ function GoogleIcon({ className }: { className?: string }) {
 // ── Page Component ─────────────────────────────────────────────────────────────
 
 export default function LoginPage() {
+  const router = useRouter(); // Initialize router
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState(""); // Changed from email to username
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(""); // Added to show login errors
 
-  const emailId = useId();
+  const emailId = useId(); // Kept variable name to match original structure
   const passwordId = useId();
   const rememberMeId = useId();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    // Simulate API call
+    setError("");
+
+    // Simulate API call delay
     await new Promise((r) => setTimeout(r, 1500));
-    setIsLoading(false);
+
+    // Check credentials
+    if (username === "heet" && password === "savan") {
+      // Redirect to dashboard on success
+      router.push("/dashboard");
+    } else {
+      // Show error on failure
+      setError("Invalid username or password. Please try again.");
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -111,23 +125,30 @@ export default function LoginPage() {
           {/* Form */}
           <form onSubmit={handleSubmit} noValidate className="space-y-5">
 
-            {/* Email */}
+            {/* Error Message Display */}
+            {error && (
+              <div className="rounded-lg bg-red-50 p-3 text-sm text-red-600 dark:bg-red-900/30 dark:text-red-400 text-center">
+                {error}
+              </div>
+            )}
+
+            {/* Username (Changed from Email) */}
             <div className="space-y-1.5">
               <label
                 htmlFor={emailId}
                 className="block text-sm font-medium text-slate-700 dark:text-slate-300"
               >
-                Email address
+                Username
               </label>
               <input
                 id={emailId}
-                type="email"
-                autoComplete="email"
+                type="text" // Changed to text for username
+                autoComplete="username"
                 required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@company.com"
-                aria-label="Email address"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Enter your username"
+                aria-label="Username"
                 className="block w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 shadow-sm transition-all duration-150 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-indigo-400 dark:focus:ring-indigo-400/20"
               />
             </div>
