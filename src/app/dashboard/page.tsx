@@ -1,4 +1,3 @@
-```tsx
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -162,12 +161,6 @@ const IconArrowDown = () => (
   </svg>
 );
 
-const IconDollar = () => (
-  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-  </svg>
-);
-
 const IconTarget = () => (
   <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
     <circle cx="12" cy="12" r="10" />
@@ -188,21 +181,9 @@ const IconUsers = () => (
   </svg>
 );
 
-const IconActivity = () => (
-  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-  </svg>
-);
-
 const IconCopy = () => (
   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-  </svg>
-);
-
-const IconCheck = () => (
-  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
   </svg>
 );
 
@@ -337,7 +318,7 @@ const recentMessages: Message[] = [
     id: 4,
     contactName: "Sophia Martinez",
     channel: "Live Chat",
-    lastMessage: "I'd like to upgrade to the Pro plan",
+    lastMessage: "I would like to upgrade to the Pro plan",
     status: "Active",
     date: "1 hr ago",
     avatar: "SM",
@@ -370,25 +351,29 @@ function MiniChart({ data, color }: { data: number[]; color: string }) {
   const range = max - min || 1;
   const width = 120;
   const height = 40;
+
   const points = data
-    .map((v, i) => {
-      const x = (i / (data.length - 1)) * width;
-      const y = height - ((v - min) / range) * height;
-      return `${x},${y}`;
+    .map(function (v, i) {
+      var x = (i / (data.length - 1)) * width;
+      var y = height - ((v - min) / range) * height;
+      return String(x) + "," + String(y);
     })
     .join(" ");
+
+  const polygonPoints = "0," + String(height) + " " + points + " " + String(width) + "," + String(height);
+  const gradientId = "grad-" + color.replace(/#/g, "");
 
   return (
     <svg width={width} height={height} className="overflow-visible">
       <defs>
-        <linearGradient id={`grad-${color}`} x1="0%" y1="0%" x2="0%" y2="100%">
+        <linearGradient id={gradientId} x1="0%" y1="0%" x2="0%" y2="100%">
           <stop offset="0%" stopColor={color} stopOpacity="0.3" />
           <stop offset="100%" stopColor={color} stopOpacity="0" />
         </linearGradient>
       </defs>
       <polygon
-        points={`0,${height} ${points} ${width},${height}`}
-        fill={`url(#grad-${color})`}
+        points={polygonPoints}
+        fill={"url(#" + gradientId + ")"}
       />
       <polyline
         points={points}
@@ -405,28 +390,31 @@ function MiniChart({ data, color }: { data: number[]; color: string }) {
 // ─── Bar Chart Component ─────────────────────────────────────────────────────
 
 function BarChart({ dark }: { dark: boolean }) {
-  const data = [65, 45, 80, 55, 90, 70, 85, 60, 95, 75, 88, 72];
-  const labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  const max = Math.max(...data);
+  var chartData = [65, 45, 80, 55, 90, 70, 85, 60, 95, 75, 88, 72];
+  var labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  var maxVal = Math.max.apply(null, chartData);
 
   return (
     <div className="flex items-end justify-between gap-2 h-40 px-2">
-      {data.map((v, i) => (
-        <div key={i} className="flex flex-col items-center gap-1 flex-1">
-          <div
-            className="w-full rounded-t-md transition-all duration-500 hover:opacity-80 cursor-pointer"
-            style={{
-              height: `${(v / max) * 100}%`,
-              background: `linear-gradient(to top, #9D1A10, #c4281c)`,
-              minHeight: "4px",
-            }}
-            title={`${labels[i]}: ${v}`}
-          />
-          <span className={`text-[9px] ${dark ? "text-slate-500" : "text-slate-400"}`}>
-            {labels[i]}
-          </span>
-        </div>
-      ))}
+      {chartData.map(function (v, i) {
+        var pct = (v / maxVal) * 100;
+        return (
+          <div key={i} className="flex flex-col items-center gap-1 flex-1">
+            <div
+              className="w-full rounded-t-md transition-all duration-500 hover:opacity-80 cursor-pointer"
+              style={{
+                height: pct + "%",
+                background: "linear-gradient(to top, #9D1A10, #c4281c)",
+                minHeight: "4px",
+              }}
+              title={labels[i] + ": " + String(v)}
+            />
+            <span className={"text-[9px] " + (dark ? "text-slate-500" : "text-slate-400")}>
+              {labels[i]}
+            </span>
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -435,37 +423,39 @@ function BarChart({ dark }: { dark: boolean }) {
 
 function CircularProgress({
   percentage,
-  size = 80,
-  strokeWidth = 6,
+  size,
+  strokeWidth,
   color,
 }: {
   percentage: number;
-  size?: number;
-  strokeWidth?: number;
+  size: number;
+  strokeWidth: number;
   color: string;
 }) {
-  const radius = (size - strokeWidth) / 2;
-  const circumference = radius * 2 * Math.PI;
-  const offset = circumference - (percentage / 100) * circumference;
+  var s = size || 80;
+  var sw = strokeWidth || 6;
+  var radius = (s - sw) / 2;
+  var circumference = radius * 2 * Math.PI;
+  var offset = circumference - (percentage / 100) * circumference;
 
   return (
-    <svg width={size} height={size} className="transform -rotate-90">
+    <svg width={s} height={s} className="transform -rotate-90">
       <circle
-        cx={size / 2}
-        cy={size / 2}
+        cx={s / 2}
+        cy={s / 2}
         r={radius}
         fill="none"
         stroke="currentColor"
-        strokeWidth={strokeWidth}
+        strokeWidth={sw}
         className={color === "#9D1A10" ? "text-red-100 dark:text-slate-700" : "text-slate-100 dark:text-slate-700"}
       />
       <circle
-        cx={size / 2}
-        cy={size / 2}
+        cx={s / 2}
+        cy={s / 2}
         r={radius}
         fill="none"
         stroke={color}
-        strokeWidth={strokeWidth}
+        strokeWidth={sw}
         strokeDasharray={circumference}
         strokeDashoffset={offset}
         strokeLinecap="round"
@@ -487,40 +477,42 @@ export default function DashboardPage() {
   const [loaded, setLoaded] = useState(false);
   const [aiGenerating, setAiGenerating] = useState(false);
 
-  useEffect(() => {
+  useEffect(function () {
     setLoaded(true);
   }, []);
 
-  const today = new Date().toLocaleDateString("en-US", {
+  var today = new Date().toLocaleDateString("en-US", {
     weekday: "long",
     year: "numeric",
     month: "long",
     day: "numeric",
   });
 
-  const statusColorMap: Record<string, string> = {
+  var statusColorMap: Record<string, string> = {
     Active: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
     Pending: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
     Closed: "bg-slate-100 text-slate-600 dark:bg-slate-700/30 dark:text-slate-400",
     Replied: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
   };
 
-  const channelIconMap: Record<string, string> = {
-    WhatsApp: "💬",
-    Email: "📧",
-    SMS: "📱",
-    "Live Chat": "💭",
-    Facebook: "👥",
+  var channelIconMap: Record<string, string> = {
+    WhatsApp: "\uD83D\uDCAC",
+    Email: "\uD83D\uDCE7",
+    SMS: "\uD83D\uDCF1",
+    "Live Chat": "\uD83D\uDCAD",
+    Facebook: "\uD83D\uDC65",
   };
 
-  const avatarColors = [
+  var avatarColors = [
     "bg-violet-500", "bg-blue-500", "bg-emerald-500", "bg-amber-500",
     "bg-rose-500", "bg-cyan-500", "bg-pink-500", "bg-indigo-500",
   ];
 
   function getAvatarColor(name: string) {
-    let hash = 0;
-    for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    var hash = 0;
+    for (var i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
     return avatarColors[Math.abs(hash) % avatarColors.length];
   }
 
@@ -531,15 +523,13 @@ export default function DashboardPage() {
         {sidebarOpen && (
           <div
             className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-            onClick={() => setSidebarOpen(false)}
+            onClick={function () { setSidebarOpen(false); }}
           />
         )}
 
         {/* ─── Sidebar ─────────────────────────────────────────── */}
         <aside
-          className={`fixed top-0 left-0 z-50 h-full w-[260px] bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 transform transition-transform duration-300 lg:translate-x-0 ${
-            sidebarOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
+          className={"fixed top-0 left-0 z-50 h-full w-[260px] bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 transform transition-transform duration-300 lg:translate-x-0 " + (sidebarOpen ? "translate-x-0" : "-translate-x-full")}
         >
           {/* Logo */}
           <div className="flex items-center gap-3 px-6 h-16 border-b border-slate-200 dark:border-slate-800">
@@ -551,7 +541,7 @@ export default function DashboardPage() {
             </span>
             <button
               className="ml-auto lg:hidden text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
-              onClick={() => setSidebarOpen(false)}
+              onClick={function () { setSidebarOpen(false); }}
             >
               <IconX />
             </button>
@@ -559,36 +549,31 @@ export default function DashboardPage() {
 
           {/* Navigation */}
           <nav className="p-4 space-y-1">
-            {sidebarItems.map((item) => (
-              <button
-                key={item.label}
-                onClick={() => {
-                  setActiveMenu(item.label);
-                  setSidebarOpen(false);
-                }}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group ${
-                  activeMenu === item.label
-                    ? "bg-[#9D1A10] text-white shadow-lg shadow-red-500/20"
-                    : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
-                }`}
-              >
-                <span className={activeMenu === item.label ? "text-white" : "text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300"}>
-                  {item.icon}
-                </span>
-                <span className="flex-1 text-left">{item.label}</span>
-                {item.badge > 0 && (
-                  <span
-                    className={`px-2 py-0.5 rounded-full text-xs font-bold ${
-                      activeMenu === item.label
-                        ? "bg-white/20 text-white"
-                        : "bg-[#9D1A10]/10 text-[#9D1A10] dark:bg-red-900/30 dark:text-red-400"
-                    }`}
-                  >
-                    {item.badge}
+            {sidebarItems.map(function (item) {
+              var isActive = activeMenu === item.label;
+              return (
+                <button
+                  key={item.label}
+                  onClick={function () {
+                    setActiveMenu(item.label);
+                    setSidebarOpen(false);
+                  }}
+                  className={"w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group " + (isActive ? "bg-[#9D1A10] text-white shadow-lg shadow-red-500/20" : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white")}
+                >
+                  <span className={isActive ? "text-white" : "text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300"}>
+                    {item.icon}
                   </span>
-                )}
-              </button>
-            ))}
+                  <span className="flex-1 text-left">{item.label}</span>
+                  {item.badge > 0 && (
+                    <span
+                      className={"px-2 py-0.5 rounded-full text-xs font-bold " + (isActive ? "bg-white/20 text-white" : "bg-[#9D1A10]/10 text-[#9D1A10] dark:bg-red-900/30 dark:text-red-400")}
+                    >
+                      {item.badge}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </nav>
 
           {/* Sidebar Footer */}
@@ -617,27 +602,23 @@ export default function DashboardPage() {
               <div className="flex items-center gap-3">
                 <button
                   className="lg:hidden text-slate-500 hover:text-slate-700 dark:hover:text-slate-200"
-                  onClick={() => setSidebarOpen(true)}
+                  onClick={function () { setSidebarOpen(true); }}
                 >
                   <IconMenu />
                 </button>
                 <div
-                  className={`hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl border transition-all duration-200 ${
-                    searchFocused
-                      ? "border-[#9D1A10] ring-2 ring-[#9D1A10]/10 bg-white dark:bg-slate-800 w-80"
-                      : "border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 w-64"
-                  }`}
+                  className={"hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl border transition-all duration-200 " + (searchFocused ? "border-[#9D1A10] ring-2 ring-[#9D1A10]/10 bg-white dark:bg-slate-800 w-80" : "border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 w-64")}
                 >
                   <IconSearch />
                   <input
                     type="text"
                     placeholder="Search contacts, messages..."
                     className="bg-transparent text-sm text-slate-900 dark:text-white placeholder-slate-400 outline-none w-full"
-                    onFocus={() => setSearchFocused(true)}
-                    onBlur={() => setSearchFocused(false)}
+                    onFocus={function () { setSearchFocused(true); }}
+                    onBlur={function () { setSearchFocused(false); }}
                   />
                   <kbd className="hidden md:inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono text-slate-400 bg-slate-100 dark:bg-slate-700 rounded">
-                    ⌘K
+                    &#8984;K
                   </kbd>
                 </div>
               </div>
@@ -646,7 +627,7 @@ export default function DashboardPage() {
               <div className="flex items-center gap-2">
                 {/* Dark mode toggle */}
                 <button
-                  onClick={() => setDark(!dark)}
+                  onClick={function () { setDark(!dark); }}
                   className="p-2 rounded-xl text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                   title={dark ? "Light mode" : "Dark mode"}
                 >
@@ -656,7 +637,7 @@ export default function DashboardPage() {
                 {/* Notifications */}
                 <div className="relative">
                   <button
-                    onClick={() => { setNotifOpen(!notifOpen); setProfileOpen(false); }}
+                    onClick={function () { setNotifOpen(!notifOpen); setProfileOpen(false); }}
                     className="relative p-2 rounded-xl text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                   >
                     <IconBell />
@@ -673,18 +654,20 @@ export default function DashboardPage() {
                           { title: "AI Copilot completed", desc: "Generated 15 responses", time: "5m ago", unread: true },
                           { title: "Team member joined", desc: "Lisa Park accepted invite", time: "1h ago", unread: false },
                           { title: "Monthly report ready", desc: "Download your December report", time: "3h ago", unread: false },
-                        ].map((n, i) => (
-                          <div key={i} className={`px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer border-b border-slate-100 dark:border-slate-700/50 last:border-0 ${n.unread ? "bg-blue-50/50 dark:bg-blue-900/10" : ""}`}>
-                            <div className="flex items-start gap-2">
-                              {n.unread && <span className="w-2 h-2 mt-1.5 rounded-full bg-[#9D1A10] flex-shrink-0" />}
-                              <div className={n.unread ? "" : "pl-4"}>
-                                <p className="text-sm font-medium text-slate-900 dark:text-white">{n.title}</p>
-                                <p className="text-xs text-slate-500 dark:text-slate-400">{n.desc}</p>
-                                <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">{n.time}</p>
+                        ].map(function (n, i) {
+                          return (
+                            <div key={i} className={"px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer border-b border-slate-100 dark:border-slate-700/50 last:border-0 " + (n.unread ? "bg-blue-50/50 dark:bg-blue-900/10" : "")}>
+                              <div className="flex items-start gap-2">
+                                {n.unread && <span className="w-2 h-2 mt-1.5 rounded-full bg-[#9D1A10] flex-shrink-0" />}
+                                <div className={n.unread ? "" : "pl-4"}>
+                                  <p className="text-sm font-medium text-slate-900 dark:text-white">{n.title}</p>
+                                  <p className="text-xs text-slate-500 dark:text-slate-400">{n.desc}</p>
+                                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">{n.time}</p>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                       <div className="px-4 py-2.5 border-t border-slate-200 dark:border-slate-700">
                         <button className="text-xs font-medium text-[#9D1A10] hover:text-[#871510] w-full text-center">
@@ -701,7 +684,7 @@ export default function DashboardPage() {
                 {/* User Profile */}
                 <div className="relative">
                   <button
-                    onClick={() => { setProfileOpen(!profileOpen); setNotifOpen(false); }}
+                    onClick={function () { setProfileOpen(!profileOpen); setNotifOpen(false); }}
                     className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                   >
                     <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#9D1A10] to-[#c4281c] flex items-center justify-center text-white text-xs font-bold">
@@ -719,14 +702,16 @@ export default function DashboardPage() {
                         <p className="font-semibold text-slate-900 dark:text-white text-sm">John Doe</p>
                         <p className="text-xs text-slate-500 dark:text-slate-400">john@omnihub.ai</p>
                       </div>
-                      {["Your Profile", "Workspace Settings", "Team Management", "Help & Support"].map((item) => (
-                        <button
-                          key={item}
-                          className="w-full text-left px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
-                        >
-                          {item}
-                        </button>
-                      ))}
+                      {["Your Profile", "Workspace Settings", "Team Management", "Help & Support"].map(function (item) {
+                        return (
+                          <button
+                            key={item}
+                            className="w-full text-left px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
+                          >
+                            {item}
+                          </button>
+                        );
+                      })}
                       <div className="border-t border-slate-200 dark:border-slate-700">
                         <button className="w-full text-left px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors">
                           Sign out
@@ -743,9 +728,7 @@ export default function DashboardPage() {
           <main className="p-4 lg:p-6 max-w-[1440px] mx-auto">
             {/* 1. Welcome Section */}
             <div
-              className={`relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#9D1A10] via-[#b91c1c] to-[#c4281c] p-6 md:p-8 mb-6 transition-all duration-700 ${
-                loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-              }`}
+              className={"relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#9D1A10] via-[#b91c1c] to-[#c4281c] p-6 md:p-8 mb-6 transition-all duration-700 " + (loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4")}
             >
               <div className="absolute inset-0 opacity-10">
                 <div className="absolute -top-24 -right-24 w-96 h-96 bg-white rounded-full blur-3xl" />
@@ -758,7 +741,7 @@ export default function DashboardPage() {
                     Welcome back, John! 👋
                   </h1>
                   <p className="text-white/80 text-sm md:text-base">
-                    Here&apos;s what&apos;s happening with your conversations today.
+                    {"Here\u2019s what\u2019s happening with your conversations today."}
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -766,70 +749,63 @@ export default function DashboardPage() {
                     { label: "Add Contact", icon: <IconPlus /> },
                     { label: "Send Message", icon: <IconSend /> },
                     { label: "AI Copilot", icon: <IconSparkles /> },
-                  ].map((btn) => (
-                    <button
-                      key={btn.label}
-                      className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-white/15 hover:bg-white/25 backdrop-blur-sm text-white text-sm font-medium rounded-xl transition-all duration-200 border border-white/20"
-                    >
-                      {btn.icon}
-                      {btn.label}
-                    </button>
-                  ))}
+                  ].map(function (btn) {
+                    return (
+                      <button
+                        key={btn.label}
+                        className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-white/15 hover:bg-white/25 backdrop-blur-sm text-white text-sm font-medium rounded-xl transition-all duration-200 border border-white/20"
+                      >
+                        {btn.icon}
+                        {btn.label}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>
 
             {/* 2. Analytics Cards */}
             <div
-              className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 transition-all duration-700 delay-100 ${
-                loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-              }`}
+              className={"grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 transition-all duration-700 delay-100 " + (loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4")}
             >
-              {analyticsCards.map((card) => (
-                <div
-                  key={card.title}
-                  className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 hover:shadow-lg hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-300 group cursor-pointer"
-                >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${card.gradient} flex items-center justify-center text-white shadow-lg`}>
-                      {card.icon}
+              {analyticsCards.map(function (card) {
+                var chartColor = "#8b5cf6";
+                if (card.gradient.indexOf("blue") !== -1) chartColor = "#3b82f6";
+                if (card.gradient.indexOf("emerald") !== -1) chartColor = "#10b981";
+                if (card.gradient.indexOf("amber") !== -1) chartColor = "#f59e0b";
+
+                return (
+                  <div
+                    key={card.title}
+                    className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 hover:shadow-lg hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-300 group cursor-pointer"
+                  >
+                    <div className="flex items-start justify-between mb-4">
+                      <div className={"w-10 h-10 rounded-xl bg-gradient-to-br " + card.gradient + " flex items-center justify-center text-white shadow-lg"}>
+                        {card.icon}
+                      </div>
+                      <MiniChart
+                        data={[30, 45, 35, 55, 48, 65, 58, 72, 68, 80, 75, 85]}
+                        color={chartColor}
+                      />
                     </div>
-                    <MiniChart
-                      data={[30, 45, 35, 55, 48, 65, 58, 72, 68, 80, 75, 85]}
-                      color={
-                        card.gradient.includes("violet")
-                          ? "#8b5cf6"
-                          : card.gradient.includes("blue")
-                          ? "#3b82f6"
-                          : card.gradient.includes("emerald")
-                          ? "#10b981"
-                          : "#f59e0b"
-                      }
-                    />
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">{card.title}</p>
+                    <div className="flex items-end gap-2">
+                      <p className="text-2xl font-bold text-slate-900 dark:text-white">{card.value}</p>
+                      <span
+                        className={"inline-flex items-center gap-0.5 text-xs font-semibold mb-1 " + (card.changeType === "up" ? "text-emerald-600 dark:text-emerald-400" : "text-red-500")}
+                      >
+                        {card.changeType === "up" ? <IconArrowUp /> : <IconArrowDown />}
+                        {card.change}
+                      </span>
+                    </div>
                   </div>
-                  <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">{card.title}</p>
-                  <div className="flex items-end gap-2">
-                    <p className="text-2xl font-bold text-slate-900 dark:text-white">{card.value}</p>
-                    <span
-                      className={`inline-flex items-center gap-0.5 text-xs font-semibold mb-1 ${
-                        card.changeType === "up"
-                          ? "text-emerald-600 dark:text-emerald-400"
-                          : "text-red-500"
-                      }`}
-                    >
-                      {card.changeType === "up" ? <IconArrowUp /> : <IconArrowDown />}
-                      {card.change}
-                    </span>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* 3. Performance + Activity Row */}
             <div
-              className={`grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6 transition-all duration-700 delay-200 ${
-                loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-              }`}
+              className={"grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6 transition-all duration-700 delay-200 " + (loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4")}
             >
               {/* Performance Section */}
               <div className="lg:col-span-2 space-y-4">
@@ -841,18 +817,16 @@ export default function DashboardPage() {
                       <p className="text-sm text-slate-500 dark:text-slate-400">Monthly revenue performance</p>
                     </div>
                     <div className="flex items-center gap-2">
-                      {["7D", "1M", "3M", "1Y"].map((period, i) => (
-                        <button
-                          key={period}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                            i === 1
-                              ? "bg-[#9D1A10] text-white"
-                              : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
-                          }`}
-                        >
-                          {period}
-                        </button>
-                      ))}
+                      {["7D", "1M", "3M", "1Y"].map(function (period, i) {
+                        return (
+                          <button
+                            key={period}
+                            className={"px-3 py-1.5 rounded-lg text-xs font-medium transition-colors " + (i === 1 ? "bg-[#9D1A10] text-white" : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800")}
+                          >
+                            {period}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                   <div className="flex items-center gap-3 mb-4">
@@ -925,32 +899,34 @@ export default function DashboardPage() {
                   <p className="text-sm text-slate-500 dark:text-slate-400">Latest updates from your team</p>
                 </div>
                 <div className="p-5 space-y-4 max-h-[460px] overflow-y-auto">
-                  {recentActivities.map((activity, idx) => (
-                    <div key={activity.id} className="flex gap-3">
-                      <div className="relative flex flex-col items-center">
-                        <div
-                          className={`w-9 h-9 rounded-full ${getAvatarColor(activity.user)} flex items-center justify-center text-white text-xs font-bold flex-shrink-0`}
-                        >
-                          {activity.avatar}
+                  {recentActivities.map(function (activity, idx) {
+                    return (
+                      <div key={activity.id} className="flex gap-3">
+                        <div className="relative flex flex-col items-center">
+                          <div
+                            className={"w-9 h-9 rounded-full " + getAvatarColor(activity.user) + " flex items-center justify-center text-white text-xs font-bold flex-shrink-0"}
+                          >
+                            {activity.avatar}
+                          </div>
+                          {idx < recentActivities.length - 1 && (
+                            <div className="w-px h-full bg-slate-200 dark:bg-slate-700 mt-2" />
+                          )}
                         </div>
-                        {idx < recentActivities.length - 1 && (
-                          <div className="w-px h-full bg-slate-200 dark:bg-slate-700 mt-2" />
-                        )}
+                        <div className="flex-1 min-w-0 pb-1">
+                          <p className="text-sm text-slate-900 dark:text-white">
+                            <span className="font-semibold">{activity.user}</span>{" "}
+                            <span className="text-slate-500 dark:text-slate-400">{activity.action}</span>{" "}
+                            <span className="font-medium">{activity.target}</span>
+                          </p>
+                          <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">{activity.time}</p>
+                        </div>
                       </div>
-                      <div className="flex-1 min-w-0 pb-1">
-                        <p className="text-sm text-slate-900 dark:text-white">
-                          <span className="font-semibold">{activity.user}</span>{" "}
-                          <span className="text-slate-500 dark:text-slate-400">{activity.action}</span>{" "}
-                          <span className="font-medium">{activity.target}</span>
-                        </p>
-                        <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">{activity.time}</p>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
                 <div className="px-5 py-3 border-t border-slate-200 dark:border-slate-800">
                   <button className="text-sm font-medium text-[#9D1A10] hover:text-[#871510] dark:text-red-400 dark:hover:text-red-300 transition-colors">
-                    View all activity →
+                    View all activity &rarr;
                   </button>
                 </div>
               </div>
@@ -958,9 +934,7 @@ export default function DashboardPage() {
 
             {/* 5. Recent Messages Table + AI Widget + Quick Actions */}
             <div
-              className={`grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6 transition-all duration-700 delay-300 ${
-                loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-              }`}
+              className={"grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6 transition-all duration-700 delay-300 " + (loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4")}
             >
               {/* Messages Table */}
               <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
@@ -970,7 +944,7 @@ export default function DashboardPage() {
                     <p className="text-sm text-slate-500 dark:text-slate-400">Latest conversation updates</p>
                   </div>
                   <button className="text-sm font-medium text-[#9D1A10] hover:text-[#871510] dark:text-red-400 transition-colors">
-                    View all →
+                    View all &rarr;
                   </button>
                 </div>
                 <div className="overflow-x-auto">
@@ -985,41 +959,43 @@ export default function DashboardPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {recentMessages.map((msg) => (
-                        <tr
-                          key={msg.id}
-                          className="border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors cursor-pointer"
-                        >
-                          <td className="px-5 py-3">
-                            <div className="flex items-center gap-2.5">
-                              <div className={`w-8 h-8 rounded-full ${getAvatarColor(msg.contactName)} flex items-center justify-center text-white text-xs font-bold flex-shrink-0`}>
-                                {msg.avatar}
+                      {recentMessages.map(function (msg) {
+                        return (
+                          <tr
+                            key={msg.id}
+                            className="border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors cursor-pointer"
+                          >
+                            <td className="px-5 py-3">
+                              <div className="flex items-center gap-2.5">
+                                <div className={"w-8 h-8 rounded-full " + getAvatarColor(msg.contactName) + " flex items-center justify-center text-white text-xs font-bold flex-shrink-0"}>
+                                  {msg.avatar}
+                                </div>
+                                <span className="text-sm font-medium text-slate-900 dark:text-white whitespace-nowrap">
+                                  {msg.contactName}
+                                </span>
                               </div>
-                              <span className="text-sm font-medium text-slate-900 dark:text-white whitespace-nowrap">
-                                {msg.contactName}
+                            </td>
+                            <td className="px-3 py-3 hidden sm:table-cell">
+                              <span className="text-sm text-slate-600 dark:text-slate-300">
+                                {channelIconMap[msg.channel]} {msg.channel}
                               </span>
-                            </div>
-                          </td>
-                          <td className="px-3 py-3 hidden sm:table-cell">
-                            <span className="text-sm text-slate-600 dark:text-slate-300">
-                              {channelIconMap[msg.channel]} {msg.channel}
-                            </span>
-                          </td>
-                          <td className="px-3 py-3 hidden md:table-cell">
-                            <p className="text-sm text-slate-500 dark:text-slate-400 truncate max-w-[200px]">
-                              {msg.lastMessage}
-                            </p>
-                          </td>
-                          <td className="px-3 py-3">
-                            <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-semibold ${statusColorMap[msg.status]}`}>
-                              {msg.status}
-                            </span>
-                          </td>
-                          <td className="px-3 py-3 hidden lg:table-cell">
-                            <span className="text-sm text-slate-400 dark:text-slate-500">{msg.date}</span>
-                          </td>
-                        </tr>
-                      ))}
+                            </td>
+                            <td className="px-3 py-3 hidden md:table-cell">
+                              <p className="text-sm text-slate-500 dark:text-slate-400 truncate max-w-[200px]">
+                                {msg.lastMessage}
+                              </p>
+                            </td>
+                            <td className="px-3 py-3">
+                              <span className={"inline-flex px-2.5 py-1 rounded-full text-xs font-semibold " + statusColorMap[msg.status]}>
+                                {msg.status}
+                              </span>
+                            </td>
+                            <td className="px-3 py-3 hidden lg:table-cell">
+                              <span className="text-sm text-slate-400 dark:text-slate-500">{msg.date}</span>
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
@@ -1065,9 +1041,9 @@ export default function DashboardPage() {
 
                     {/* Generate Button */}
                     <button
-                      onClick={() => {
+                      onClick={function () {
                         setAiGenerating(true);
-                        setTimeout(() => setAiGenerating(false), 2000);
+                        setTimeout(function () { setAiGenerating(false); }, 2000);
                       }}
                       disabled={aiGenerating}
                       className="w-full py-2.5 bg-gradient-to-r from-[#9D1A10] to-[#c4281c] hover:from-[#871510] hover:to-[#b01a18] text-white text-sm font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-red-500/20 disabled:opacity-70 flex items-center justify-center gap-2"
@@ -1121,20 +1097,22 @@ export default function DashboardPage() {
                       icon: <IconSparkles />,
                       color: "bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/30",
                     },
-                  ].map((action) => (
-                    <button
-                      key={action.label}
-                      className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-200 group ${action.color}`}
-                    >
-                      <div className="w-9 h-9 rounded-lg bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
-                        {action.icon}
-                      </div>
-                      <div className="text-left">
-                        <p className="text-sm font-semibold text-slate-900 dark:text-white">{action.label}</p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">{action.desc}</p>
-                      </div>
-                    </button>
-                  ))}
+                  ].map(function (action) {
+                    return (
+                      <button
+                        key={action.label}
+                        className={"w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-200 group " + action.color}
+                      >
+                        <div className="w-9 h-9 rounded-lg bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
+                          {action.icon}
+                        </div>
+                        <div className="text-left">
+                          <p className="text-sm font-semibold text-slate-900 dark:text-white">{action.label}</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">{action.desc}</p>
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
 
                 {/* Performance Donut */}
@@ -1153,11 +1131,9 @@ export default function DashboardPage() {
 
             {/* ─── Footer ────────────────────────────────────────── */}
             <footer
-              className={`text-center py-6 text-sm text-slate-400 dark:text-slate-600 transition-all duration-700 delay-500 ${
-                loaded ? "opacity-100" : "opacity-0"
-              }`}
+              className={"text-center py-6 text-sm text-slate-400 dark:text-slate-600 transition-all duration-700 delay-500 " + (loaded ? "opacity-100" : "opacity-0")}
             >
-              <p>© 2025 OmniHub AI. All rights reserved.</p>
+              <p>{"\u00A9 2025 OmniHub AI. All rights reserved."}</p>
             </footer>
           </main>
         </div>
@@ -1165,4 +1141,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-```
